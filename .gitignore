@@ -1,0 +1,7 @@
+logs/
+*.log
+*.user
+*.suo
+bin/
+obj/
+encode_source_utf8.ps1
