@@ -1,7 +1,7 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
 $watcher = Join-Path $root 'gpu_comfy_watch.ps1'
-$controllerExe = Join-Path $root 'ComfyUIGpuMonitor.exe'
+$controllerExe = Join-Path $root 'HaloGuard.exe'
 $controlRoot = Join-Path $env:LOCALAPPDATA 'ComfyUiGpuWatch'
 $startup = [Environment]::GetFolderPath('Startup')
 $desktop = [Environment]::GetFolderPath('Desktop')
@@ -18,18 +18,20 @@ function Set-Shortcut([string]$Path, [string]$ScriptPath, [string]$Description) 
     $shortcut.Save()
 }
 
-$startupShortcut = $shell.CreateShortcut((Join-Path $startup 'ComfyUI GPU Watchdog.lnk'))
+$startupShortcut = $shell.CreateShortcut((Join-Path $startup '光环守护 · 看门狗.lnk'))
 $startupShortcut.TargetPath = $hostExe
 $startupShortcut.Arguments = '-NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "' + $watcher + '"'
 $startupShortcut.WorkingDirectory = $root
 $startupShortcut.WindowStyle = 7
 $startupShortcut.Description = 'Silently monitor NVIDIA GPU and ComfyUI at user logon'
 $startupShortcut.Save()
-$desktopShortcut = $shell.CreateShortcut((Join-Path $desktop 'ComfyUI GPU Monitor.lnk'))
+$desktopShortcut = $shell.CreateShortcut((Join-Path $desktop '光环守护.lnk'))
 $desktopShortcut.TargetPath = $controllerExe
 $desktopShortcut.WorkingDirectory = $root
 $desktopShortcut.WindowStyle = 1
-$desktopShortcut.Description = 'Open the local ComfyUI and NVIDIA monitoring panel'
+$desktopShortcut.Description = '光环守护 - 打开本机 ComfyUI 与 NVIDIA 监控面板'
+Remove-Item -LiteralPath (Join-Path $desktop 'ComfyUI GPU Monitor.lnk') -Force -ErrorAction SilentlyContinue
+Remove-Item -LiteralPath (Join-Path $startup 'ComfyUI GPU Watchdog.lnk') -Force -ErrorAction SilentlyContinue
 $desktopShortcut.Save()
 $null = New-Item -ItemType Directory -Path $controlRoot -Force
 Remove-Item -LiteralPath (Join-Path $controlRoot 'disabled.flag'),(Join-Path $controlRoot 'stop.flag'),(Join-Path $controlRoot 'pause.flag') -Force -ErrorAction SilentlyContinue
