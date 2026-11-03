@@ -161,7 +161,9 @@ header{display:grid;grid-template-columns:minmax(240px,1.7fr) repeat(5,minmax(0,
   html,body{overflow:hidden!important}
   .app{overflow:hidden}
   .panels{overflow:hidden}
-  .stage{min-height:0}
+  /* the page fixes .stage at 62vh in its own media query; that pinned the middle
+     grid row and let the panel row overflow out of view. Let the grid decide. */
+  .stage{height:auto!important; min-height:0!important}
   /* embedded in a short window: the halo is the point, so panels shrink */
   /* narrow embed: the brand line used to collide with the KPI row */
   @media (max-width: 1250px){
@@ -170,8 +172,15 @@ header{display:grid;grid-template-columns:minmax(240px,1.7fr) repeat(5,minmax(0,
     .kpi .k{font-size:8px;letter-spacing:.8px}
     .kpi .v{font-size:12px}
   }
+  /* only four panels: event log / gpu trace / queue / metrics.
+     the other four (jobs, vram accounting, processes, temperature) are hidden
+     so the panel area is one row and the halo keeps the height. */
+  .panels .p:nth-child(3),
+  .panels .p:nth-child(4),
+  .panels .p:nth-child(5),
+  .panels .p:nth-child(6){display:none}
   @media (max-height: 720px){
-    .p{height:92px}
+    .p{height:96px}
     .p h3{margin-bottom:3px}
     .brand h1{font-size:17px}
     .brand p{margin:2px 0 5px}
@@ -2083,12 +2092,14 @@ document.addEventListener('keydown', e => {
     };
     window.drawVal = function () {
       try {
+        if (!cVal || !cVal.offsetParent) return;     // hidden panel - skip
         var s = liveStats; if (!s || !cVal || !cVal.x) return;
         drawTrace(cVal, (s.hist || {}).temp || [], 100, [240, 166, 198], 'TEMP ' + Math.round((s.gpu || {}).temp || 0) + 'C');
       } catch (e) { }
     };
     window.drawDiff = function () {
       try {
+        if (!cDiff || !cDiff.offsetParent) return;   // hidden panel - skip
         var s = liveStats; if (!s || !cDiff || !cDiff.x) return;
         var g = s.gpu || {}, cm = s.comfy || {};
         var w = cDiff.w, h = cDiff.h, x = cDiff.x;
