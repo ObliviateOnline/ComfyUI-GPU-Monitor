@@ -1,4 +1,4 @@
-﻿# 光环守护 · HaloGuard
+# 光环守护 · HaloGuard
 
 Windows 本地 NVIDIA GPU 与 ComfyUI 监管工具。后台 PowerShell 看门狗静默轮询，桌面程序负责一个看得懂的界面——上面是监管状态，下面是随负载跳动的光环画面。
 
